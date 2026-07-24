@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum SourceSheet {
+  ATIVA
+  PTTC
+  MANUAL
+}
+
+enum PersonnelStatus {
+  MILITAR_DA_ATIVA
+  RESERVA_REMUNERADA
+  CIVIL
+}
+
+model User {
+  id           String      @id @default(cuid())
+  saram        String      @unique
+  nome         String
+  postoGrad    String?
+  quadro       String?
+  especialidade String?
+  sourceSheet  SourceSheet @default(MANUAL)
+  setorHint    String?
+  passwordHash String
+  role         Role        @default(USER)
+  active       Boolean     @default(true)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  submissions  Submission[]
+
+  @@index([role])
+  @@index([sourceSheet])
+}
+
+model Submission {
+  id             String          @id @default(cuid())
+  userId         String
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status         PersonnelStatus
+  setorAd        String
+  email          String?
+  telefone       String?
+  identidade     String?
+  termoSnapshot  Json
+  pastasAd       String[]
+  isCurrent      Boolean         @default(true)
+  pdfGeneratedAt DateTime?
+  createdAt      DateTime        @default(now())
+
+  @@index([userId, isCurrent])
+  @@index([createdAt])
+}
