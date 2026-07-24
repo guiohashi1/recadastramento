@@ -16,6 +16,11 @@ export const metadata: Metadata = {
   title: "Recadastramento HARF 2026",
   description:
     "Termo de Compromisso e solicitação de acessos de rede — Hospital de Aeronáutica de Recife",
+  robots: {
+    index: false,
+    follow: false,
+    googleBot: { index: false, follow: false },
+  },
 };
 
 export default function RootLayout({

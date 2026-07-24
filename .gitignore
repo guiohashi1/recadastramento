@@ -36,8 +36,11 @@ yarn-error.log*
 
 # sensitive operational data (efetivo)
 data/*.ods
+data/termo-compromisso-*.pdf
+data/_*.pdf
+data/_*.png
 
-# vercel
+# vercel / render
 .vercel
 
 # typescript

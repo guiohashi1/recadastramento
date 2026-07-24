@@ -99,7 +99,44 @@ saram;nome;posto_grad;status;status_label;setor_ad;pastas_ad;email;telefone;subm
 - Páginas convertidas para A4 retrato (corrige `/Rotate 90`); dados escritos nas células em branco.
 - Data no Termo: **momento em que o usuário gera/baixa o PDF** (`Recife-PE, dd de mês de aaaa`).
 - Página extra (anexo AD): status, setor, pastas e SARAM (não constam no modelo oficial).
-- Campo **CPF** do papel recebe o valor de **Identidade** do formulário (não há CPF no efetivo).
+- Campo **CPF** do papel recebe o CPF informado no formulário (máscara `000.000.000-00`).
+
+## Deploy no Render
+
+1. Garanta que o código está no GitHub (`origin` já aponta para o repo).
+2. Em [render.com](https://render.com) → **New** → **Web Service** → conecte o repositório `recadastramento`.
+3. Configuração:
+   - **Runtime:** Node
+   - **Build Command:** `npm ci && npm run build`
+   - **Start Command:** `npm run start`
+   - **Instance:** Free (ou Starter se o free “dormir” demais)
+4. **Environment** (Environment Variables):
+
+| Variável | Valor |
+|----------|--------|
+| `DATABASE_URL` | Pooler Supabase **6543** + `?pgbouncer=true` |
+| `DIRECT_URL` | Direto `db.<ref>.supabase.co:5432` (migrations no build) |
+| `AUTH_SECRET` | Gere com Generate / `openssl rand -base64 32` |
+| `AUTH_URL` | `https://SEU-SERVICO.onrender.com` (URL do Render) |
+| `ADMIN_SARAM` | `admin` |
+| `ADMIN_PASSWORD` | senha forte do TI |
+| `ADMIN_NOME` | `Administrador TI` |
+| `NODE_VERSION` | `20.19.0` |
+
+5. Deploy. O `npm run build` roda `prisma migrate deploy` automaticamente.
+6. **Seed admin** (uma vez): no shell do Render (*Shell*) ou local apontando para o mesmo banco:
+   ```bash
+   npm run seed:admin
+   ```
+   O efetivo já deve estar no Supabase (import local anterior). Se for banco novo:
+   ```bash
+   npm run import:efetivo
+   ```
+7. Opcional: Cloudflare na frente (proxy) com a URL do Render.
+
+**Free tier:** após ~15 min sem acesso o serviço “dorme”; o 1º hit pode levar 30–60s.
+
+Blueprint opcional: arquivo [`render.yaml`](render.yaml) na raiz (New → Blueprint).
 
 ## Regras de catálogo
 
