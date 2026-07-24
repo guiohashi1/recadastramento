@@ -2,6 +2,10 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ["@prisma/client", "prisma"],
+  // Garante CSV/PDF do modelo no bundle serverless (Vercel)
+  outputFileTracingIncludes: {
+    "/*": ["./data/**/*"],
+  },
   async headers() {
     return [
       {

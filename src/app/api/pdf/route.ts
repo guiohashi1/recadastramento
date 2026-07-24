@@ -1,6 +1,10 @@
 import { auth } from "@/lib/auth";
 import { buildPdfForCurrentUser } from "@/app/formulario/actions";
 
+/** PDF com template embutido — precisa de mais tempo no serverless (Vercel Hobby = 60s). */
+export const maxDuration = 60;
+export const runtime = "nodejs";
+
 export async function GET() {
   const session = await auth();
   if (!session?.user) {

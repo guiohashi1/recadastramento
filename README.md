@@ -138,6 +138,29 @@ saram;nome;posto_grad;status;status_label;setor_ad;pastas_ad;email;telefone;subm
 
 Blueprint opcional: arquivo [`render.yaml`](render.yaml) na raiz (New → Blueprint).
 
+## Deploy na Vercel (teste / alternativa)
+
+1. Push do código no GitHub.
+2. Em [vercel.com](https://vercel.com) → **Add New Project** → importe `recadastramento`.
+3. Framework: **Next.js** (detecta sozinho). Root Directory: vazio.
+4. **Environment Variables** (Production + Preview):
+
+| Variável | Valor |
+|----------|--------|
+| `DATABASE_URL` | Pooler Supabase **6543** + `?pgbouncer=true&sslmode=require` |
+| `DIRECT_URL` | Pooler **Session** `...pooler.supabase.com:5432` + `sslmode=require` |
+| `AUTH_SECRET` | gere um secret longo |
+| `AUTH_URL` | `https://SEU-PROJETO.vercel.app` (ajuste após o 1º deploy) |
+| `ADMIN_SARAM` | `admin` |
+| `ADMIN_PASSWORD` | senha forte |
+| `ADMIN_NOME` | `Administrador TI` |
+
+5. Deploy. O build roda migrate + Next.
+6. Atualize `AUTH_URL` com a URL real da Vercel e faça redeploy.
+7. Teste com atenção: **login**, **formulário** e sobretudo **gerar PDF** (timeout serverless).
+
+Arquivo de apoio: [`vercel.json`](vercel.json). A rota `/api/pdf` usa `maxDuration = 60`.
+
 ## Regras de catálogo
 
 - Setor: apenas `setores.csv`
