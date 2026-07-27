@@ -34,14 +34,17 @@ export function loadSetores(): CatalogOption[] {
 
 /**
  * Network folders selectable by users.
- * Excludes chefia groups (-ch) — not self-service in v1.
+ * Excludes chefia groups (-ch) and blocked self-service groups.
  */
+const PASTAS_BLOQUEADAS = new Set(["harf-efetivo"]);
+
 export function loadPastasRede(options?: {
   excludeSetor?: string;
 }): CatalogOption[] {
   const exclude = options?.excludeSetor;
   return readLines("grupos.csv")
     .filter((cn) => !cn.toLowerCase().endsWith("-ch"))
+    .filter((cn) => !PASTAS_BLOQUEADAS.has(cn.toLowerCase()))
     .filter((cn) => (exclude ? cn !== exclude : true))
     .map((value) => ({ value, label: labelFromAdGroup(value) }))
     .sort((a, b) => a.label.localeCompare(b.label, "pt-BR"));

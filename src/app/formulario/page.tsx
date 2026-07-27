@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -57,26 +56,36 @@ export default async function FormularioPage({
       </header>
 
       <div className="mx-auto max-w-3xl px-4 py-8">
-        {params.ok ? (
-          <div className="mb-6 rounded-md border border-teal-200 bg-teal-50 px-4 py-3 text-sm text-teal-900">
-            Dados salvos.{" "}
-            <Link href="/api/pdf" className="font-semibold underline">
-              Baixar PDF preenchido
-            </Link>{" "}
-            — imprima, solicite assinatura do chefe e entregue ao TI.
-          </div>
-        ) : null}
-
-        {current?.pdfGeneratedAt ? (
-          <div className="mb-6 rounded-md border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
-            Último PDF gerado em{" "}
-            {current.pdfGeneratedAt.toLocaleString("pt-BR", {
-              timeZone: "America/Recife",
-            })}
-            .{" "}
-            <Link href="/api/pdf" className="font-medium text-teal-800 underline">
-              Baixar novamente
-            </Link>
+        {current ? (
+          <div className="mb-6 rounded-lg border border-teal-200 bg-white p-5 shadow-sm shadow-teal-900/5">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="min-w-0">
+                <p className="text-base font-semibold text-slate-900">
+                  {params.ok
+                    ? "Recadastramento salvo com sucesso"
+                    : "Seu Termo está pronto"}
+                </p>
+                <p className="mt-1 text-sm text-slate-600">
+                  {params.ok
+                    ? "Baixe o PDF, imprima, colete a assinatura do chefe de cada seção/pasta solicitada e entregue ao TI."
+                    : `Último PDF gerado em ${current.pdfGeneratedAt?.toLocaleString(
+                        "pt-BR",
+                        { timeZone: "America/Recife" },
+                      )}.`}
+                </p>
+                <p className="mt-2 text-xs text-slate-500">
+                  Os dados ficam em visualização. Use{" "}
+                  <span className="font-medium text-slate-700">Alterar dados</span>{" "}
+                  abaixo se precisar corrigir algo.
+                </p>
+              </div>
+              <a
+                href="/api/pdf"
+                className="inline-flex shrink-0 items-center justify-center rounded-md bg-teal-800 px-5 py-3 text-sm font-semibold text-white transition hover:bg-teal-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-800"
+              >
+                {params.ok ? "Baixar PDF preenchido" : "Baixar PDF novamente"}
+              </a>
+            </div>
           </div>
         ) : null}
 

@@ -8,7 +8,7 @@ Sistema para militares do Hospital de Aeronáutica de Recife preencherem o Termo
 - Postgres (Supabase em produção; Docker local opcional)
 - Prisma ORM
 - Auth.js (credentials) — **login = senha = SARAM** (conveniência, não segurança forte)
-- `pdf-lib` — modelo oficial como fundo (logo/tabelas) + dados nas células + anexo AD
+- `pdf-lib` — Termo de Compromisso + Termo de Responsabilidade + anexo AD
 
 
 ## Pré-requisitos
@@ -17,7 +17,8 @@ Sistema para militares do Hospital de Aeronáutica de Recife preencherem o Termo
 2. Projeto Supabase **ou** Docker Desktop para Postgres local
 3. Arquivos em `data/`:
    - `setores.csv`, `grupos.csv`
-   - `TERMO DE COMPROMISSO 2026_rotated.pdf` (referência visual; o PDF gerado não usa overlay)
+   - `TERMO DE COMPROMISSO 2026_rotated.pdf`
+   - `TERMO DE RESPONSABILIDADE.pdf`
    - `Efetivo Geral 21.07.2026.ods` (não versionar em repo público)
 
 
@@ -95,11 +96,12 @@ saram;nome;posto_grad;status;status_label;setor_ad;pastas_ad;email;telefone;subm
 
 ## PDF
 
-- O PDF gerado **usa as 3 páginas do modelo oficial** (`TERMO DE COMPROMISSO 2026_rotated.pdf`): logo, tabelas e cláusulas intactas.
-- Páginas convertidas para A4 retrato (corrige `/Rotate 90`); dados escritos nas células em branco.
-- Data no Termo: **momento em que o usuário gera/baixa o PDF** (`Recife-PE, dd de mês de aaaa`).
-- Página extra (anexo AD): status, setor, pastas e SARAM (não constam no modelo oficial).
-- Campo **CPF** do papel recebe o CPF informado no formulário (máscara `000.000.000-00`).
+- O PDF gerado inclui, nesta ordem:
+  1. **Termo de Compromisso** (3 págs. do modelo oficial, com dados nas células)
+  2. **Termo de Responsabilidade** (`TERMO DE RESPONSABILIDADE.pdf`, com Local/data e nome; identidade manuscrita)
+  3. **Anexo AD** (setor/pastas + assinaturas de chefia)
+- Data nos termos: **momento em que o usuário gera/baixa o PDF** (`Recife-PE, dd de mês de aaaa`).
+- Campo **CPF** do Compromisso usa o CPF do formulário; no Responsabilidade, Identidade fica em branco.
 
 ## Deploy no Render
 
