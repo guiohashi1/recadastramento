@@ -284,9 +284,7 @@ export function RecadastroForm(props: Props) {
           </select>
           {!readOnly ? (
             <p className="text-xs text-slate-500">
-              O setor já corresponde a um grupo AD (ex.: SINFO → harf-sinfo).
-              Nas pastas abaixo, marque outras pastas necessárias por serviço,
-              escala, comissões, etc.
+              Indique abaixo as demais pastas de rede que necessita acessar em decorrência de escalas de serviço, comissões ou outras atribuições..
             </p>
           ) : null}
         </div>
