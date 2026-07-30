@@ -89,10 +89,21 @@ npm run dev
 Formato CSV (`;`):
 
 ```text
-saram;nome;posto_grad;status;status_label;setor_ad;pastas_ad;email;telefone;submitted_at
+situacao;saram;nome;posto_grad;source_sheet;status;status_label;setor_ad;pastas_ad;email;telefone;submitted_at
 ```
 
 `pastas_ad` usa `|` como separador. O script AD futuro deve consumir **só este export** (não conectar no Supabase).
+
+Filtros opcionais na URL (mesmos da tela admin):
+
+- `view=enviados|pendentes|todos` (padrão na API: `enviados`)
+- `posto=` posto/graduação exato (ex.: `1S`)
+- `q=` busca textual (nome, SARAM, setor)
+
+Exemplos:
+
+- `/api/admin/export?format=csv&view=pendentes`
+- `/api/admin/export?format=csv&view=enviados&posto=1S`
 
 ## PDF
 

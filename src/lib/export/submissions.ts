@@ -1,11 +1,15 @@
 import type { PersonnelStatus, Submission, User } from "@prisma/client";
 import { PERSONNEL_STATUS_LABELS } from "@/lib/constants";
+import type { AdminRosterRow } from "@/lib/admin/roster";
+import { sourceSheetLabel } from "@/lib/admin/roster";
 
 export type ExportRow = {
+  situacao: "pendente" | "enviado";
   saram: string;
   nome: string;
   posto_grad: string;
-  status: PersonnelStatus;
+  source_sheet: string;
+  status: PersonnelStatus | "";
   status_label: string;
   setor_ad: string;
   pastas_ad: string;
@@ -14,13 +18,16 @@ export type ExportRow = {
   submitted_at: string;
 };
 
+/** @deprecated Prefer toExportRowFromRoster — mantido para compatibilidade. */
 export function toExportRow(
   submission: Submission & { user: User },
 ): ExportRow {
   return {
+    situacao: "enviado",
     saram: submission.user.saram,
     nome: submission.user.nome,
     posto_grad: submission.user.postoGrad ?? "",
+    source_sheet: sourceSheetLabel(submission.user.sourceSheet),
     status: submission.status,
     status_label: PERSONNEL_STATUS_LABELS[submission.status],
     setor_ad: submission.setorAd,
@@ -31,45 +38,87 @@ export function toExportRow(
   };
 }
 
+export function toExportRowFromRoster(row: AdminRosterRow): ExportRow {
+  if (!row.submission) {
+    return {
+      situacao: "pendente",
+      saram: row.saram,
+      nome: row.nome,
+      posto_grad: row.postoGrad ?? "",
+      source_sheet: sourceSheetLabel(row.sourceSheet),
+      status: "",
+      status_label: "",
+      setor_ad: "",
+      pastas_ad: "",
+      email: "",
+      telefone: "",
+      submitted_at: "",
+    };
+  }
+
+  return {
+    situacao: "enviado",
+    saram: row.saram,
+    nome: row.nome,
+    posto_grad: row.postoGrad ?? "",
+    source_sheet: sourceSheetLabel(row.sourceSheet),
+    status: row.submission.status,
+    status_label: row.submission.statusLabel,
+    setor_ad: row.submission.setorAd,
+    pastas_ad: row.submission.pastasAd.join("|"),
+    email: row.submission.email ?? "",
+    telefone: row.submission.telefone ?? "",
+    submitted_at: row.submission.createdAt.toISOString(),
+  };
+}
+
+const CSV_HEADERS = [
+  "situacao",
+  "saram",
+  "nome",
+  "posto_grad",
+  "source_sheet",
+  "status",
+  "status_label",
+  "setor_ad",
+  "pastas_ad",
+  "email",
+  "telefone",
+  "submitted_at",
+] as const;
+
 /** Canonical CSV for AD script (semicolon-separated, UTF-8 with BOM). */
 export function toCanonicalCsv(rows: ExportRow[]): string {
-  const header = [
-    "saram",
-    "nome",
-    "posto_grad",
-    "status",
-    "status_label",
-    "setor_ad",
-    "pastas_ad",
-    "email",
-    "telefone",
-    "submitted_at",
-  ];
-
   const escape = (v: string) => {
     if (/[;"\n\r]/.test(v)) return `"${v.replace(/"/g, '""')}"`;
     return v;
   };
 
   const lines = [
-    header.join(";"),
+    CSV_HEADERS.join(";"),
     ...rows.map((r) =>
-      [
-        r.saram,
-        r.nome,
-        r.posto_grad,
-        r.status,
-        r.status_label,
-        r.setor_ad,
-        r.pastas_ad,
-        r.email,
-        r.telefone,
-        r.submitted_at,
-      ]
-        .map((c) => escape(String(c)))
-        .join(";"),
+      CSV_HEADERS.map((key) => escape(String(r[key] ?? ""))).join(";"),
     ),
   ];
 
   return `\uFEFF${lines.join("\r\n")}\r\n`;
+}
+
+export function exportFilename(
+  format: "csv" | "json",
+  filters: { view: string; posto: string },
+): string {
+  const parts = ["recadastramento", filters.view];
+  if (filters.posto) {
+    parts.push(
+      filters.posto
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "")
+        .slice(0, 40),
+    );
+  }
+  return `${parts.filter(Boolean).join("-")}.${format}`;
 }

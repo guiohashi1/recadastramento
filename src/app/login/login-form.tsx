@@ -21,7 +21,6 @@ export function LoginForm() {
           id="saram"
           name="saram"
           type="text"
-          inputMode="numeric"
           autoComplete="username"
           required
           className={fieldClass}
