@@ -455,6 +455,17 @@ export async function generateTermoPdf(
         color: rgb(1, 1, 1),
       });
       drawField(page, font, formatLocalDate(generatedAt), 505, 528, 10, 300);
+
+      // Remove "Assinatura do Comandante/Chefe/Diretor OM" (mantém só solicitante)
+      const cmdTL = fromImg(430, 720);
+      const cmdBR = fromImg(870, 840);
+      page.drawRectangle({
+        x: cmdTL.x,
+        y: cmdBR.y,
+        width: cmdBR.x - cmdTL.x,
+        height: cmdTL.y - cmdBR.y,
+        color: rgb(1, 1, 1),
+      });
     }
   }
 
