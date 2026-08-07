@@ -42,7 +42,7 @@ export default async function LoginPage() {
       </div>
 
       <p className="absolute right-3 bottom-3 text-[11px] text-slate-400 sm:right-4 sm:bottom-4">
-        Desenvolvido por{" "}
+        dev {" "}
         <a
           href="https://github.com/guiohashi1"
           target="_blank"
