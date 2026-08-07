@@ -30,10 +30,14 @@ export default async function LoginPage() {
             </div>
           </div>
 
-          <p className="mt-5 text-sm text-slate-600">
-            Entre com seu SARAM para preencher o Termo de Compromisso e
-            solicitar acessos de rede.
-          </p>
+          <div className="mt-5 text-sm text-slate-600 space-y-2">
+            <p>
+              Preencha os campos para gerar o Termo de Compromisso e solicitar acessos de rede.
+            </p>
+            <p className="rounded-md bg-amber-50 p-2 text-amber-800 border border-amber-200">
+              <strong className="font-bold">Atenção:</strong> Digite seu <strong className="font-bold">SARAM</strong> no campo de login e <strong className="font-bold">repita o SARAM</strong> no campo de senha.
+            </p>
+          </div>
 
           <div className="mt-6">
             <LoginForm />

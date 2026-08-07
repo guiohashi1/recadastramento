@@ -45,16 +45,6 @@ docker compose up -d
 
 No `.env`:
 
-```env
-DATABASE_URL="postgresql://recadastro:recadastro@localhost:5432/recadastramento"
-DIRECT_URL="postgresql://recadastro:recadastro@localhost:5432/recadastramento"
-AUTH_SECRET="dev-secret-change-me"
-AUTH_URL="http://localhost:3000"
-ADMIN_SARAM="admin"
-ADMIN_PASSWORD="TroqueEstaSenhaForte!"
-ADMIN_NOME="Administrador TI"
-```
-
 ## Setup do banco e dados
 
 ```bash
