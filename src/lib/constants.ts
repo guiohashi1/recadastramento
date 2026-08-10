@@ -18,10 +18,12 @@ export const PERSONNEL_STATUS_OPTIONS: {
   { value: "CIVIL", label: PERSONNEL_STATUS_LABELS.CIVIL },
 ];
 
-/** Default status suggested from ODS sheet */
+/** Default status suggested from ODS sheet / perfil civil */
 export function defaultStatusFromSheet(
   sheet: "ATIVA" | "PTTC" | "MANUAL",
+  options?: { isCivil?: boolean },
 ): PersonnelStatus {
+  if (options?.isCivil) return "CIVIL";
   if (sheet === "PTTC") return "RESERVA_REMUNERADA";
   if (sheet === "ATIVA") return "MILITAR_DA_ATIVA";
   return "MILITAR_DA_ATIVA";

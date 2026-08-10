@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { auth, signOut } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { isValidPasta, isValidSetor } from "@/lib/catalogs";
+import { formatCpf } from "@/lib/cpf";
 import { generateTermoPdf } from "@/lib/pdf/generate-termo";
 import { submissionFormSchema } from "@/lib/validation/submission";
 import { defaultStatusFromSheet } from "@/lib/constants";
@@ -124,6 +125,7 @@ export async function buildPdfForCurrentUser(): Promise<Uint8Array> {
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
     include: {
+      civilProfile: true,
       submissions: {
         where: { isCurrent: true },
         take: 1,
@@ -142,7 +144,7 @@ export async function buildPdfForCurrentUser(): Promise<Uint8Array> {
   return generateTermoPdf({
     nome: user.nome,
     postoGrad: user.postoGrad ?? "",
-    saram: user.saram,
+    saram: user.civilProfile ? formatCpf(user.saram) : user.saram,
     identidade: submission.identidade,
     email: submission.email,
     telefone: submission.telefone,
@@ -151,13 +153,21 @@ export async function buildPdfForCurrentUser(): Promise<Uint8Array> {
     pastasAd: submission.pastasAd,
     // Data impressa no Termo = momento em que o usuário gera/baixa o PDF
     generatedAt: new Date(),
-    om: "HARF",
+    om: user.civilProfile?.om ?? "HARF",
   });
 }
 
 export async function suggestedStatusForUser() {
   const session = await auth();
-  if (!session?.user?.sourceSheet) return defaultStatusFromSheet("MANUAL");
+  if (!session?.user?.id) return defaultStatusFromSheet("MANUAL");
+
+  const civil = await prisma.civilUser.findUnique({
+    where: { userId: session.user.id },
+    select: { id: true },
+  });
+  if (civil) return defaultStatusFromSheet("MANUAL", { isCivil: true });
+
+  if (!session.user.sourceSheet) return defaultStatusFromSheet("MANUAL");
   return defaultStatusFromSheet(
     session.user.sourceSheet as "ATIVA" | "PTTC" | "MANUAL",
   );

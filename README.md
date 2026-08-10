@@ -69,6 +69,13 @@ npm run dev
 4. Salva → baixa PDF (`/api/pdf`)  
 5. Imprime → assinatura do chefe → entrega ao TI  
 
+### Civil
+
+1. Cadastro inicial em `/cadastro-civil` (nome, CPF, e-mail; posto=Civil, OM=HARF)  
+2. Sistema cria `CivilUser` + `User` (login = CPF) e abre o formulário  
+3. Segue o mesmo fluxo de termo/pastas/PDF  
+4. Reentrada: login com CPF / CPF  
+
 ### TI / Admin
 
 - Dashboard: totais, enviados, pendentes  
@@ -170,7 +177,7 @@ Arquivo de apoio: [`vercel.json`](vercel.json). A rota `/api/pdf` usa `maxDurati
 - Pastas: `grupos.csv` **sem** sufixo `-ch`
 - PTTC (ODS) → default `RESERVA_REMUNERADA`
 - ATIVA → default `MILITAR_DA_ATIVA`
-- Civis: fora da v1
+- Civis: cadastro em `/cadastro-civil` (tabela `CivilUser` + conta `User` espelho); login CPF/CPF
 
 ## Scripts
 

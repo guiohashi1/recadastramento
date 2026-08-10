@@ -3,30 +3,19 @@
 import { useActionState, useMemo, useState } from "react";
 import type { CatalogOption } from "@/lib/catalogs";
 import { PERSONNEL_STATUS_OPTIONS } from "@/lib/constants";
+import { formatCpf } from "@/lib/cpf";
 import type { PersonnelStatus } from "@prisma/client";
 import {
   submitRecadastramentoAction,
   type SubmitState,
 } from "./actions";
 
-/** Máscara 000.000.000-00 */
-function formatCpf(value: string): string {
-  const digits = value.replace(/\D/g, "").slice(0, 11);
-  if (digits.length <= 3) return digits;
-  if (digits.length <= 6) {
-    return `${digits.slice(0, 3)}.${digits.slice(3)}`;
-  }
-  if (digits.length <= 9) {
-    return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
-  }
-  return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
-}
-
 type Props = {
   nome: string;
   saram: string;
   postoGrad: string | null;
   setorHint: string | null;
+  isCivil?: boolean;
   defaultStatus: PersonnelStatus;
   setores: CatalogOption[];
   pastas: CatalogOption[];
@@ -142,9 +131,11 @@ export function RecadastroForm(props: Props) {
           </div>
           <div>
             <dt className="text-xs tracking-wide text-slate-500 uppercase">
-              SARAM
+              {props.isCivil ? "CPF (login)" : "SARAM"}
             </dt>
-            <dd className="font-medium text-slate-900">{props.saram}</dd>
+            <dd className="font-medium text-slate-900">
+              {props.isCivil ? formatCpf(props.saram) : props.saram}
+            </dd>
           </div>
           <div>
             <dt className="text-xs tracking-wide text-slate-500 uppercase">

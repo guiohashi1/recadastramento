@@ -19,6 +19,7 @@ export default async function FormularioPage({
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
     include: {
+      civilProfile: true,
       submissions: {
         where: { isCurrent: true },
         take: 1,
@@ -32,7 +33,8 @@ export default async function FormularioPage({
   const current = user.submissions[0] ?? null;
   const setores = loadSetores();
   const pastas = loadPastasRede();
-  const defaultStatus = defaultStatusFromSheet(user.sourceSheet);
+  const isCivil = Boolean(user.civilProfile);
+  const defaultStatus = defaultStatusFromSheet(user.sourceSheet, { isCivil });
 
   return (
     <main className="min-h-screen bg-[#f2f5f4]">
@@ -94,15 +96,19 @@ export default async function FormularioPage({
           saram={user.saram}
           postoGrad={user.postoGrad}
           setorHint={user.setorHint}
+          isCivil={isCivil}
           defaultStatus={defaultStatus}
           setores={setores}
           pastas={pastas}
           alreadySubmitted={!!current}
           initialSetor={current?.setorAd}
           initialPastas={current?.pastasAd}
-          initialEmail={current?.email}
+          initialEmail={current?.email ?? user.civilProfile?.email}
           initialTelefone={current?.telefone}
-          initialIdentidade={current?.identidade}
+          initialIdentidade={
+            current?.identidade ??
+            (user.civilProfile ? user.civilProfile.cpf : null)
+          }
           initialStatus={current?.status}
         />
       </div>

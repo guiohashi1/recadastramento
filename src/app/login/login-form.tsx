@@ -14,8 +14,11 @@ export function LoginForm() {
   return (
     <form action={action} className="flex w-full flex-col gap-4">
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="saram" className="text-sm font-medium text-slate-700">
-          SARAM
+        <label
+          htmlFor="saram"
+          className="text-sm font-medium text-slate-700"
+        >
+          SARAM ou CPF
         </label>
         <input
           id="saram"

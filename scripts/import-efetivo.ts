@@ -33,6 +33,14 @@ async function main() {
         console.warn(`Skip ADMIN saram=${row.saram}`);
         continue;
       }
+      const civil = await prisma.civilUser.findUnique({
+        where: { userId: existing.id },
+        select: { id: true },
+      });
+      if (civil) {
+        console.warn(`Skip CIVIL saram=${row.saram}`);
+        continue;
+      }
       await prisma.user.update({
         where: { saram: row.saram },
         data: {

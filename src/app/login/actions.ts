@@ -17,7 +17,7 @@ export async function loginAction(
   const password = String(formData.get("password") ?? "");
 
   if (!saram || !password) {
-    return { error: "Informe SARAM e senha." };
+    return { error: "Informe SARAM/CPF e senha." };
   }
 
   const h = await headers();
@@ -45,7 +45,7 @@ export async function loginAction(
     });
   } catch (err) {
     if (err instanceof AuthError) {
-      return { error: "SARAM ou senha inválidos." };
+      return { error: "SARAM/CPF ou senha inválidos." };
     }
     throw err;
   }

@@ -35,13 +35,26 @@ export default async function LoginPage() {
               Preencha os campos para gerar o Termo de Compromisso e solicitar acessos de rede.
             </p>
             <p className="rounded-md bg-amber-50 p-2 text-amber-800 border border-amber-200">
-              <strong className="font-bold">Atenção:</strong> Digite seu <strong className="font-bold">SARAM</strong> no campo de login e <strong className="font-bold">repita o SARAM</strong> no campo de senha.
+              <strong className="font-bold">Atenção:</strong> Militar — digite o{" "}
+              <strong className="font-bold">SARAM</strong> no login e repita o{" "}
+              <strong className="font-bold">SARAM</strong> na senha. Civil — use o{" "}
+              <strong className="font-bold">CPF</strong> no login e na senha.
             </p>
           </div>
 
           <div className="mt-6">
             <LoginForm />
           </div>
+
+          <p className="mt-5 text-center text-sm text-slate-600">
+            Funcionário civil (fora do efetivo)?{" "}
+            <a
+              href="/cadastro-civil"
+              className="font-medium text-teal-800 hover:underline"
+            >
+              Fazer cadastro inicial
+            </a>
+          </p>
         </div>
       </div>
 

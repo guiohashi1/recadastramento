@@ -23,8 +23,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const parsed = credentialsSchema.safeParse(credentials);
         if (!parsed.success) return null;
 
-        const saram = parsed.data.saram.trim();
-        const password = parsed.data.password;
+        // Militar: SARAM literal. Civil: CPF (com ou sem máscara) → 11 dígitos.
+        const rawLogin = parsed.data.saram.trim();
+        const loginDigits = rawLogin.replace(/\D/g, "");
+        const saram =
+          loginDigits.length === 11 ? loginDigits : rawLogin;
+        const password =
+          loginDigits.length === 11
+            ? parsed.data.password.replace(/\D/g, "") || parsed.data.password
+            : parsed.data.password;
 
         const user = await prisma.user.findUnique({ where: { saram } });
         if (!user || !user.active) return null;
