@@ -19,6 +19,7 @@ export async function GET(request: Request) {
     view: searchParams.get("view"),
     q: searchParams.get("q"),
     posto: searchParams.get("posto"),
+    tipo: searchParams.get("tipo"),
     defaultView: "enviados",
   });
 
@@ -26,6 +27,7 @@ export async function GET(request: Request) {
   const filename = exportFilename(format, {
     view: roster.filters.view,
     posto: roster.filters.posto,
+    tipo: roster.filters.tipo,
   });
 
   if (format === "json") {

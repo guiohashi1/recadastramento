@@ -179,8 +179,18 @@ export function RecadastroForm(props: Props) {
             <label htmlFor="status" className="text-sm font-medium">
               Situação
             </label>
-            {readOnly ? (
-              <p className={`${inputClass} m-0`}>{statusLabel}</p>
+            {readOnly || props.isCivil ? (
+              <>
+                <p className={`${inputClass} m-0`}>
+                  {props.isCivil
+                    ? PERSONNEL_STATUS_OPTIONS.find((o) => o.value === "CIVIL")
+                        ?.label
+                    : statusLabel}
+                </p>
+                {!readOnly && props.isCivil ? (
+                  <input type="hidden" name="status" value="CIVIL" />
+                ) : null}
+              </>
             ) : (
               <select
                 id="status"
@@ -237,11 +247,19 @@ export function RecadastroForm(props: Props) {
               maxLength={14}
               required={!readOnly}
               value={cpf}
-              onChange={(e) => setCpf(formatCpf(e.target.value))}
+              onChange={(e) => {
+                if (props.isCivil) return;
+                setCpf(formatCpf(e.target.value));
+              }}
               disabled={readOnly}
-              readOnly={readOnly}
+              readOnly={readOnly || Boolean(props.isCivil)}
               className={`${inputClass} font-mono tracking-wide`}
             />
+            {props.isCivil && !readOnly ? (
+              <p className="text-xs text-slate-500">
+                CPF fixo do cadastro civil (mesmo do login).
+              </p>
+            ) : null}
           </div>
         </div>
       </section>

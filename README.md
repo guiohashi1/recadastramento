@@ -86,21 +86,23 @@ npm run dev
 Formato CSV (`;`):
 
 ```text
-situacao;saram;nome;posto_grad;source_sheet;status;status_label;setor_ad;pastas_ad;email;telefone;submitted_at
+situacao;tipo;saram;nome;posto_grad;source_sheet;status;status_label;setor_ad;pastas_ad;email;telefone;submitted_at
 ```
 
-`pastas_ad` usa `|` como separador. O script AD futuro deve consumir **só este export** (não conectar no Supabase).
+`pastas_ad` usa `|` como separador. O script AD futuro deve consumir **só este export** (não conectar no Supabase). Para AD, filtre `tipo=militar`.
 
 Filtros opcionais na URL (mesmos da tela admin):
 
 - `view=enviados|pendentes|todos` (padrão na API: `enviados`)
+- `tipo=militar|civil`
 - `posto=` posto/graduação exato (ex.: `1S`)
-- `q=` busca textual (nome, SARAM, setor)
+- `q=` busca textual (nome, SARAM/CPF, setor)
 
 Exemplos:
 
-- `/api/admin/export?format=csv&view=pendentes`
+- `/api/admin/export?format=csv&view=enviados&tipo=militar`
 - `/api/admin/export?format=csv&view=enviados&posto=1S`
+- `/api/admin/export?format=csv&view=pendentes&tipo=civil`
 
 ## PDF
 

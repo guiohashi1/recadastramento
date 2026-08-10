@@ -70,10 +70,17 @@ export async function submitRecadastramentoAction(
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
+    include: { civilProfile: true },
   });
   if (!user || !user.active) {
     return { error: "Usuário não encontrado ou inativo." };
   }
+
+  // Civil: status e CPF vêm do perfil — não confiar no formulário
+  const status = user.civilProfile ? "CIVIL" : data.status;
+  const identidade = user.civilProfile
+    ? formatCpf(user.civilProfile.cpf)
+    : data.identidade;
 
   const now = new Date();
 
@@ -86,24 +93,25 @@ export async function submitRecadastramentoAction(
     await tx.submission.create({
       data: {
         userId: user.id,
-        status: data.status,
+        status,
         setorAd: data.setorAd,
         pastasAd: data.pastasAd,
         email: data.email || null,
         telefone: data.telefone || null,
-        identidade: data.identidade || null,
+        identidade: identidade || null,
         termoSnapshot: {
           nome: user.nome,
           postoGrad: user.postoGrad,
           saram: user.saram,
           quadro: user.quadro,
           especialidade: user.especialidade,
-          status: data.status,
+          status,
           setorAd: data.setorAd,
           pastasAd: data.pastasAd,
           email: data.email || null,
           telefone: data.telefone || null,
-          identidade: data.identidade || null,
+          identidade: identidade || null,
+          isCivil: Boolean(user.civilProfile),
         },
         isCurrent: true,
         pdfGeneratedAt: now,
@@ -154,6 +162,7 @@ export async function buildPdfForCurrentUser(): Promise<Uint8Array> {
     // Data impressa no Termo = momento em que o usuário gera/baixa o PDF
     generatedAt: new Date(),
     om: user.civilProfile?.om ?? "HARF",
+    isCivil: Boolean(user.civilProfile),
   });
 }
 

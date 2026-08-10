@@ -9,7 +9,12 @@ import { AdminRosterPanel } from "./admin-roster-panel";
 export default async function AdminPage({
   searchParams,
 }: {
-  searchParams: Promise<{ view?: string; q?: string; posto?: string }>;
+  searchParams: Promise<{
+    view?: string;
+    q?: string;
+    posto?: string;
+    tipo?: string;
+  }>;
 }) {
   const session = await auth();
   if (!session?.user) redirect("/login");
@@ -20,6 +25,7 @@ export default async function AdminPage({
     view: params.view,
     q: params.q,
     posto: params.posto,
+    tipo: params.tipo,
   });
 
   return (
@@ -59,8 +65,9 @@ export default async function AdminPage({
 
       <div className="mx-auto max-w-6xl px-4 py-8">
         <p className="mb-4 text-sm text-slate-600">
-          Os exports usam os filtros ativos (aba, posto e busca) — o que você vê
-          na tabela é o que sai no arquivo.
+          Os exports usam os filtros ativos (aba, tipo, posto e busca) — o que
+          você vê na tabela é o que sai no arquivo. Para o script AD, exporte
+          só <span className="font-medium">militar</span>.
         </p>
         <AdminStats roster={roster} />
         <AdminRosterPanel roster={roster} />

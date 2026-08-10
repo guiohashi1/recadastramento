@@ -5,6 +5,7 @@ import { sourceSheetLabel } from "@/lib/admin/roster";
 
 export type ExportRow = {
   situacao: "pendente" | "enviado";
+  tipo: "civil" | "militar";
   saram: string;
   nome: string;
   posto_grad: string;
@@ -24,6 +25,7 @@ export function toExportRow(
 ): ExportRow {
   return {
     situacao: "enviado",
+    tipo: "militar",
     saram: submission.user.saram,
     nome: submission.user.nome,
     posto_grad: submission.user.postoGrad ?? "",
@@ -42,6 +44,7 @@ export function toExportRowFromRoster(row: AdminRosterRow): ExportRow {
   if (!row.submission) {
     return {
       situacao: "pendente",
+      tipo: row.tipo,
       saram: row.saram,
       nome: row.nome,
       posto_grad: row.postoGrad ?? "",
@@ -58,6 +61,7 @@ export function toExportRowFromRoster(row: AdminRosterRow): ExportRow {
 
   return {
     situacao: "enviado",
+    tipo: row.tipo,
     saram: row.saram,
     nome: row.nome,
     posto_grad: row.postoGrad ?? "",
@@ -74,6 +78,7 @@ export function toExportRowFromRoster(row: AdminRosterRow): ExportRow {
 
 const CSV_HEADERS = [
   "situacao",
+  "tipo",
   "saram",
   "nome",
   "posto_grad",
@@ -106,9 +111,10 @@ export function toCanonicalCsv(rows: ExportRow[]): string {
 
 export function exportFilename(
   format: "csv" | "json",
-  filters: { view: string; posto: string },
+  filters: { view: string; posto: string; tipo: string },
 ): string {
   const parts = ["recadastramento", filters.view];
+  if (filters.tipo) parts.push(filters.tipo);
   if (filters.posto) {
     parts.push(
       filters.posto

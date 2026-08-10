@@ -26,6 +26,8 @@ export type TermoPdfInput = {
   generatedAt?: Date;
   /** OM impressa no formulário (padrão HARF) */
   om?: string;
+  /** Funcionário civil (login = CPF) */
+  isCivil?: boolean;
 };
 
 /** Dimensões do render de calibração (scale 1.5 com rotation 90). */
@@ -165,7 +167,7 @@ function addAnnexPage(
 
   const lines: Array<[string, string]> = [
     ["Nome", input.nome],
-    ["SARAM", input.saram],
+    [input.isCivil ? "CPF" : "SARAM", input.saram],
     ["Posto/Graduação", input.postoGrad || "—"],
     ["Status", PERSONNEL_STATUS_LABELS[input.status]],
     [
@@ -174,12 +176,14 @@ function addAnnexPage(
     ],
     ["E-mail", input.email?.trim() || "—"],
     ["Telefone/Ramal", input.telefone?.trim() || "—"],
-    ["CPF", input.identidade?.trim() || "—"],
-    [
-      "Gerado em",
-      generatedAt.toLocaleString("pt-BR", { timeZone: "America/Recife" }),
-    ],
   ];
+  if (!input.isCivil) {
+    lines.push(["CPF", input.identidade?.trim() || "—"]);
+  }
+  lines.push([
+    "Gerado em",
+    generatedAt.toLocaleString("pt-BR", { timeZone: "America/Recife" }),
+  ]);
 
   for (const [label, value] of lines) {
     page.drawText(`${label}:`, {

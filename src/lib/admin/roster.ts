@@ -9,12 +9,15 @@ import { PERSONNEL_STATUS_LABELS } from "@/lib/constants";
 import { labelFromAdGroup } from "@/lib/catalogs";
 
 export type AdminRosterView = "pendentes" | "enviados" | "todos";
+export type AdminRosterTipo = "civil" | "militar" | "";
 
 export type AdminFilters = {
   view: AdminRosterView;
   q: string;
   /** Match exato de posto/graduação; vazio = todos */
   posto: string;
+  /** militar | civil | '' (todos) */
+  tipo: AdminRosterTipo;
 };
 
 export type AdminRosterRow = {
@@ -24,6 +27,7 @@ export type AdminRosterRow = {
   postoGrad: string | null;
   setorHint: string | null;
   sourceSheet: SourceSheet;
+  tipo: "civil" | "militar";
   submitted: boolean;
   submission: {
     id: string;
@@ -48,7 +52,7 @@ export type AdminRosterResult = {
     pct: number;
   };
   rows: AdminRosterRow[];
-  /** Totais por aba (após filtro de posto, antes da busca) */
+  /** Totais por aba (após filtros de posto/tipo, antes da busca) */
   viewCounts: {
     pendentes: number;
     enviados: number;
@@ -79,10 +83,18 @@ export function parseExportRosterView(
   return "enviados";
 }
 
+export function parseAdminRosterTipo(
+  raw: string | undefined | null,
+): AdminRosterTipo {
+  if (raw === "civil" || raw === "militar") return raw;
+  return "";
+}
+
 export function parseAdminFilters(input: {
   view?: string | null;
   q?: string | null;
   posto?: string | null;
+  tipo?: string | null;
   /** Se true, ausência de view → enviados (API export). */
   defaultView?: AdminRosterView;
 }): AdminFilters {
@@ -95,6 +107,7 @@ export function parseAdminFilters(input: {
     view,
     q: (input.q ?? "").trim(),
     posto: (input.posto ?? "").trim(),
+    tipo: parseAdminRosterTipo(input.tipo),
   };
 }
 
@@ -103,6 +116,7 @@ export function buildAdminHref(filters: AdminFilters): string {
   params.set("view", filters.view);
   if (filters.q) params.set("q", filters.q);
   if (filters.posto) params.set("posto", filters.posto);
+  if (filters.tipo) params.set("tipo", filters.tipo);
   return `/admin?${params.toString()}`;
 }
 
@@ -115,10 +129,16 @@ export function buildExportHref(
   params.set("view", filters.view);
   if (filters.q) params.set("q", filters.q);
   if (filters.posto) params.set("posto", filters.posto);
+  if (filters.tipo) params.set("tipo", filters.tipo);
   return `/api/admin/export?${params.toString()}`;
 }
 
-function toRow(user: User & { submissions: Submission[] }): AdminRosterRow {
+type UserWithSubs = User & {
+  submissions: Submission[];
+  civilProfile: { id: string } | null;
+};
+
+function toRow(user: UserWithSubs): AdminRosterRow {
   const submission = user.submissions[0] ?? null;
   return {
     userId: user.id,
@@ -127,6 +147,7 @@ function toRow(user: User & { submissions: Submission[] }): AdminRosterRow {
     postoGrad: user.postoGrad,
     setorHint: user.setorHint,
     sourceSheet: user.sourceSheet,
+    tipo: user.civilProfile ? "civil" : "militar",
     submitted: Boolean(submission),
     submission: submission
       ? {
@@ -150,6 +171,7 @@ function matchesQuery(row: AdminRosterRow, query: string): boolean {
   return (
     row.nome.toLowerCase().includes(q) ||
     row.saram.toLowerCase().includes(q) ||
+    row.tipo.includes(q) ||
     (row.postoGrad?.toLowerCase().includes(q) ?? false) ||
     (row.setorHint?.toLowerCase().includes(q) ?? false) ||
     (row.submission?.setorAd.toLowerCase().includes(q) ?? false) ||
@@ -162,12 +184,18 @@ function matchesPosto(row: AdminRosterRow, posto: string): boolean {
   return (row.postoGrad ?? "") === posto;
 }
 
+function matchesTipo(row: AdminRosterRow, tipo: AdminRosterTipo): boolean {
+  if (!tipo) return true;
+  return row.tipo === tipo;
+}
+
 export function applyAdminFilters(
   rows: AdminRosterRow[],
   filters: AdminFilters,
 ): AdminRosterRow[] {
   return rows
     .filter((r) => matchesPosto(r, filters.posto))
+    .filter((r) => matchesTipo(r, filters.tipo))
     .filter((r) =>
       filters.view === "pendentes"
         ? !r.submitted
@@ -186,6 +214,7 @@ export async function getAdminRoster(options: {
   view?: string | null;
   q?: string | null;
   posto?: string | null;
+  tipo?: string | null;
   defaultView?: AdminRosterView;
 }): Promise<AdminRosterResult> {
   const filters = parseAdminFilters(options);
@@ -193,6 +222,7 @@ export async function getAdminRoster(options: {
   const users = await prisma.user.findMany({
     where: { role: "USER", active: true },
     include: {
+      civilProfile: { select: { id: true } },
       submissions: {
         where: { isCurrent: true },
         take: 1,
@@ -212,9 +242,11 @@ export async function getAdminRoster(options: {
     ),
   ].sort((a, b) => a.localeCompare(b, "pt-BR"));
 
-  const afterPosto = allRows.filter((r) => matchesPosto(r, filters.posto));
-  const enviados = afterPosto.filter((r) => r.submitted).length;
-  const total = afterPosto.length;
+  const afterScope = allRows
+    .filter((r) => matchesPosto(r, filters.posto))
+    .filter((r) => matchesTipo(r, filters.tipo));
+  const enviados = afterScope.filter((r) => r.submitted).length;
+  const total = afterScope.length;
   const pendentes = total - enviados;
 
   const rows = applyAdminFilters(allRows, filters);
