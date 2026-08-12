@@ -47,7 +47,7 @@ export default async function LoginPage() {
           </div>
 
           <p className="mt-5 text-center text-sm text-slate-600">
-            Funcionário civil?{" "}
+            Servidor civil?{" "}
             <a
               href="/cadastro-civil"
               className="font-medium text-teal-800 hover:underline"

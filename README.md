@@ -71,7 +71,7 @@ npm run dev
 
 ### Civil
 
-1. Cadastro inicial em `/cadastro-civil` (nome, CPF, e-mail; posto=Civil, OM=HARF)  
+1. Cadastro inicial em `/cadastro-civil` (nome, CPF, e-mail; posto=Servidor Civil, OM=HARF)  
 2. Sistema cria `CivilUser` + `User` (login = CPF) e abre o formulário  
 3. Segue o mesmo fluxo de termo/pastas/PDF  
 4. Reentrada: login com CPF / CPF  

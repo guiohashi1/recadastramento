@@ -25,7 +25,7 @@ export default async function CadastroCivilPage() {
             <div className="min-w-0 pt-1">
               <p className="text-sm font-medium text-teal-800">HARF · SINFO</p>
               <h1 className="mt-1 font-serif text-2xl leading-snug text-slate-900">
-                Cadastro de civis
+                Cadastro de servidores civis
               </h1>
             </div>
           </div>

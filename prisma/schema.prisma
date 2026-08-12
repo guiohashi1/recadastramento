@@ -53,7 +53,7 @@ model CivilUser {
   nome      String
   email     String
   om        String   @default("HARF")
-  postoGrad String   @default("Civil")
+  postoGrad String   @default("Servidor Civil")
   userId    String   @unique
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
