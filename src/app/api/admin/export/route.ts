@@ -14,13 +14,15 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url);
   const format = searchParams.get("format") === "json" ? "json" : "csv";
+  const forAd = searchParams.get("ad") === "1";
 
   const roster = await getAdminRoster({
-    view: searchParams.get("view"),
-    q: searchParams.get("q"),
-    posto: searchParams.get("posto"),
-    tipo: searchParams.get("tipo"),
+    view: forAd ? "enviados" : searchParams.get("view"),
+    q: forAd ? "" : searchParams.get("q"),
+    posto: forAd ? "" : searchParams.get("posto"),
+    tipo: forAd ? "militar" : searchParams.get("tipo"),
     defaultView: "enviados",
+    defaultTipo: "militar",
   });
 
   const rows = roster.rows.map(toExportRowFromRoster);
@@ -28,6 +30,7 @@ export async function GET(request: Request) {
     view: roster.filters.view,
     posto: roster.filters.posto,
     tipo: roster.filters.tipo,
+    ad: forAd,
   });
 
   if (format === "json") {

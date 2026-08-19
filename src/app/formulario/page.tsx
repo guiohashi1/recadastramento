@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { loadPastasRede, loadSetores } from "@/lib/catalogs";
 import { defaultStatusFromSheet } from "@/lib/constants";
+import { canonicalPostoGrad } from "@/lib/postos";
 import { logoutAction } from "./actions";
 import { RecadastroForm } from "./recadastro-form";
 
@@ -94,7 +95,9 @@ export default async function FormularioPage({
         <RecadastroForm
           nome={user.nome}
           saram={user.saram}
-          postoGrad={user.postoGrad}
+          postoGrad={
+            user.postoGrad ? canonicalPostoGrad(user.postoGrad) : user.postoGrad
+          }
           setorHint={user.setorHint}
           isCivil={isCivil}
           defaultStatus={defaultStatus}

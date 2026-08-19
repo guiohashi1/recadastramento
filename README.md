@@ -79,9 +79,10 @@ npm run dev
 ### TI / Admin
 
 - Dashboard: totais, enviados, pendentes  
-- Export canônico para script AD:
-  - `/api/admin/export?format=csv`
-  - `/api/admin/export?format=json`
+- Export canônico para script AD (**só militares que enviaram**):
+  - `/api/admin/export?format=csv&ad=1`
+  - `/api/admin/export?format=json&ad=1`
+  - Sem `ad=1`, o padrão também é `tipo=militar` + `view=enviados`. Civis não entram nesse recorte.
 
 Formato CSV (`;`):
 
@@ -89,20 +90,22 @@ Formato CSV (`;`):
 situacao;tipo;saram;nome;posto_grad;source_sheet;status;status_label;setor_ad;pastas_ad;email;telefone;submitted_at
 ```
 
-`pastas_ad` usa `|` como separador. O script AD futuro deve consumir **só este export** (não conectar no Supabase). Para AD, filtre `tipo=militar`.
+`pastas_ad` usa `|` como separador. O script AD deve consumir **só o export `ad=1`** (não conectar no Supabase). Servidor civil (posto Civil da planilha ou cadastro CPF) fica de fora.
 
-Filtros opcionais na URL (mesmos da tela admin):
+Filtros opcionais na URL (export da lista na tela admin):
 
 - `view=enviados|pendentes|todos` (padrão na API: `enviados`)
-- `tipo=militar|civil`
-- `posto=` posto/graduação exato (ex.: `1S`)
+- `tipo=militar|civil|todos` (padrão na API: `militar`)
+- `posto=` posto/graduação (`Civil` e `Servidor Civil` são o mesmo posto)
 - `q=` busca textual (nome, SARAM/CPF, setor)
+- `ad=1` força militares enviados, ignora os outros filtros
 
 Exemplos:
 
+- `/api/admin/export?format=csv&ad=1`
 - `/api/admin/export?format=csv&view=enviados&tipo=militar`
-- `/api/admin/export?format=csv&view=enviados&posto=1S`
-- `/api/admin/export?format=csv&view=pendentes&tipo=civil`
+- `/api/admin/export?format=csv&view=enviados&tipo=civil`
+- `/api/admin/export?format=csv&view=pendentes&tipo=militar`
 
 ## PDF
 

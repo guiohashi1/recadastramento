@@ -3,7 +3,7 @@ import type { PersonnelStatus } from "@prisma/client";
 export const PERSONNEL_STATUS_LABELS: Record<PersonnelStatus, string> = {
   MILITAR_DA_ATIVA: "Militar da ativa",
   RESERVA_REMUNERADA: "Reserva remunerada",
-  CIVIL: "Civil",
+  CIVIL: "Servidor civil",
 };
 
 export const PERSONNEL_STATUS_OPTIONS: {

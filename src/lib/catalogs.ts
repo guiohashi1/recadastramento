@@ -1,5 +1,8 @@
 import fs from "fs";
 import path from "path";
+import { labelFromAdGroup } from "@/lib/ad-group";
+
+export { labelFromAdGroup };
 
 export type CatalogOption = {
   /** AD group CN, e.g. harf-uti */
@@ -18,12 +21,6 @@ function readLines(fileName: string): string[] {
     .split(/\r?\n/)
     .map((l) => l.trim())
     .filter((l) => l.length > 0 && !l.startsWith("#"));
-}
-
-/** harf-uti → UTI */
-export function labelFromAdGroup(cn: string): string {
-  const stripped = cn.replace(/^harf-/i, "");
-  return stripped.replace(/_/g, " ").toUpperCase();
 }
 
 export function loadSetores(): CatalogOption[] {

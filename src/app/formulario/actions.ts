@@ -9,6 +9,7 @@ import { formatCpf } from "@/lib/cpf";
 import { generateTermoPdf } from "@/lib/pdf/generate-termo";
 import { submissionFormSchema } from "@/lib/validation/submission";
 import { defaultStatusFromSheet } from "@/lib/constants";
+import { canonicalPostoGrad } from "@/lib/postos";
 
 export type SubmitState = {
   error?: string;
@@ -101,7 +102,9 @@ export async function submitRecadastramentoAction(
         identidade: identidade || null,
         termoSnapshot: {
           nome: user.nome,
-          postoGrad: user.postoGrad,
+          postoGrad: user.postoGrad
+            ? canonicalPostoGrad(user.postoGrad)
+            : user.postoGrad,
           saram: user.saram,
           quadro: user.quadro,
           especialidade: user.especialidade,
@@ -151,7 +154,7 @@ export async function buildPdfForCurrentUser(): Promise<Uint8Array> {
 
   return generateTermoPdf({
     nome: user.nome,
-    postoGrad: user.postoGrad ?? "",
+    postoGrad: user.postoGrad ? canonicalPostoGrad(user.postoGrad) : "",
     saram: user.civilProfile ? formatCpf(user.saram) : user.saram,
     identidade: submission.identidade,
     email: submission.email,

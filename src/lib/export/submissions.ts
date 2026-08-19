@@ -111,8 +111,11 @@ export function toCanonicalCsv(rows: ExportRow[]): string {
 
 export function exportFilename(
   format: "csv" | "json",
-  filters: { view: string; posto: string; tipo: string },
+  filters: { view: string; posto: string; tipo: string; ad?: boolean },
 ): string {
+  if (filters.ad) {
+    return `recadastramento-ad-militares-enviados.${format}`;
+  }
   const parts = ["recadastramento", filters.view];
   if (filters.tipo) parts.push(filters.tipo);
   if (filters.posto) {

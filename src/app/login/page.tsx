@@ -37,8 +37,9 @@ export default async function LoginPage() {
             <p className="rounded-md bg-amber-50 p-2 text-amber-800 border border-amber-200">
               <strong className="font-bold">Atenção:</strong> Militar — digite o{" "}
               <strong className="font-bold">SARAM</strong> no login e repita o{" "}
-              <strong className="font-bold">SARAM</strong> na senha. Civil — use o{" "}
-              <strong className="font-bold">CPF</strong> no login e na senha.
+              <strong className="font-bold">SARAM</strong> na senha. Servidor
+              civil — use o <strong className="font-bold">CPF</strong> no login e
+              na senha.
             </p>
           </div>
 

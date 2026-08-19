@@ -1,5 +1,6 @@
 import * as XLSX from "xlsx";
 import type { SourceSheet } from "@prisma/client";
+import { canonicalPostoGrad } from "../postos";
 
 export type EfetivoRow = {
   saram: string;
@@ -126,9 +127,10 @@ function parseSheet(
       continue;
     }
 
-    const postoGrad =
+    const postoRaw =
       getByHeader(row, header.map, "POSTO/GRAD", "POSTO/GRADUACAO", "POSTO") ||
-      null;
+      "";
+    const postoGrad = postoRaw ? canonicalPostoGrad(postoRaw) : null;
     const quadro = getByHeader(row, header.map, "QUADRO") || null;
     const especialidade =
       getByHeader(row, header.map, "ESP", "ESPECIALIDADE") || null;
